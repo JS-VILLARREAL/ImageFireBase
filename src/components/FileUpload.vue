@@ -7,12 +7,18 @@
         <input @click="uploadFile($event)" type="submit" class="btn btn-primary" value="Subir Imagenes">
     </div>
     <ProgressBar :progress="progress" />
+    <hr>
+    <div class="row">
+        <div class="col-4" v-for="imagen in imagenes" :key="imagen.id">
+            <img :src="imagen.url" alt="" class="img-fluid">
+        </div>
+    </div>
 
 </template>
 
 <script>
 import { storage } from '../firebase/init.js'
-import { ref, uploadBytesResumable } from "@firebase/storage"
+import { ref, uploadBytesResumable, getDownloadURL } from "@firebase/storage"
 import ProgressBar from './ProgressBar.vue'
 import { v4 as uuidv4 } from 'uuid';
 
@@ -53,7 +59,13 @@ export default {
                     console.log(error)
                 }, 
                 () => {
-                    console.log('Upload is complete');
+                    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                        console.log('File available at', downloadURL);
+                        this.imagenes.push({
+                            id: uuidv4(),
+                            url: downloadURL
+                        })
+                    });
                 }
             );
         },
@@ -62,6 +74,5 @@ export default {
         ProgressBar
     }
 }
-
 
 </script>
