@@ -4,7 +4,9 @@
             <label for="formFile" class="form-label">Imagenes</label>
             <input @change="clickImage($event)" class="form-control" type="file" id="formFile" accept="image/*">
         </div>
-        <input @click="uploadFile($event)" type="submit" class="btn btn-primary" value="Subir Imagenes">
+        <button @click="uploadFile()" class="btn btn-primary" :disabled="!imageSelected" >
+            Subir Imagenes
+        </button>
     </div>
     <ProgressBar :progress="progress" />
     <hr>
@@ -27,12 +29,14 @@ export default {
         return {
             imagenes: [],
             image: null,
-            progress: this.progress
+            progress: this.progress,
+            imageSelected: false
         }
     },
     methods: {
         clickImage(e){
             this.image = e.target.files[0]
+            this.imageSelected = true
             console.log(this.image)
         },
         uploadFile(){
@@ -43,8 +47,8 @@ export default {
                     const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                     console.log('Upload is ' + progress + '% done');
                     this.progress = progress
-                    if (progress == 100) {
-                        this.progress = 0 
+                    if (progress === 100) {
+                        this.imageSelected = false
                     }
                     switch (snapshot.state) {
                         case 'paused':
@@ -57,7 +61,7 @@ export default {
                 }, 
                 (error) => {
                     console.log(error)
-                }, 
+                },
                 () => {
                     getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                         console.log('File available at', downloadURL);
@@ -71,7 +75,7 @@ export default {
         },
     },
     components: {
-        ProgressBar
+        ProgressBar, 
     }
 }
 
