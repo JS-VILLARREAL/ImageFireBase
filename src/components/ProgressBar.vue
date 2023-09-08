@@ -9,6 +9,7 @@
 const props = defineProps({
   progress: Number
 })
+
 </script>
 
 <style>
